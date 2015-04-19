@@ -15,6 +15,16 @@ private:
     lms::imaging::Image *imagePtr;
 
     std::string directory;
+
+    // valid formats: pgm, ppm
+    std::string format;
+
+    /**
+     * @brief Format string that is used together with snprintf
+     * to produce the file names.
+     */
+    std::string filepattern;
+
     int imageCounter;
 };
 

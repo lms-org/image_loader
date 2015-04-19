@@ -7,6 +7,8 @@ bool ImageLoader::initialize() {
 
     std::string imageChannel = config->get<std::string>("image_channel");
     directory = config->get<std::string>("directory");
+    format = config->get<std::string>("format");
+    filepattern = config->get<std::string>("filepattern");
     imageCounter = 0;
 
     if(directory.empty()) {
@@ -19,6 +21,19 @@ bool ImageLoader::initialize() {
         return false;
     }
 
+    if(format.empty()) {
+        logger.error("init") << "format was not specified";
+        return false;
+    } else if(format != "pgm" && format != "ppm") {
+        logger.error("init") << "format must be either pgm or ppm";
+        return false;
+    }
+
+    if(filepattern.empty()) {
+        logger.error("init") << "filepattern was not specified";
+        return false;
+    }
+
     imagePtr = datamanager()->writeChannel<lms::imaging::Image>(this, imageChannel);
     return true;
 }
@@ -28,9 +43,18 @@ bool ImageLoader::deinitialize() {
 }
 
 bool ImageLoader::cycle() {
+    char name[50];
+    std::snprintf(name, sizeof(name), filepattern.c_str(), imageCounter);
+    std::string fullPath = directory + "/" + name;
+
+    bool result = false;
+
     logger.time("read");
-    bool result = lms::imaging::readPGM(*imagePtr,
-                                        directory + "/image_" + std::to_string(imageCounter) + ".pgm");
+    if(format == "pgm") {
+        result = lms::imaging::readPGM(*imagePtr, fullPath);
+    } else if(format == "ppm") {
+        result = lms::imaging::readPPM(*imagePtr, fullPath);
+    }
     logger.timeEnd("read");
 
     if(! result) {
