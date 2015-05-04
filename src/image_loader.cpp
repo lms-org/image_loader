@@ -5,7 +5,6 @@
 bool ImageLoader::initialize() {
     config = getConfig();
 
-    std::string imageChannel = config->get<std::string>("image_channel");
     directory = config->get<std::string>("directory");
     format = config->get<std::string>("format");
     filepattern = config->get<std::string>("filepattern");
@@ -13,11 +12,6 @@ bool ImageLoader::initialize() {
 
     if(directory.empty()) {
         logger.error("init") << "directory is empty";
-        return false;
-    }
-
-    if(imageChannel.empty()) {
-        logger.error("init") << "image_channel is empty";
         return false;
     }
 
@@ -34,7 +28,7 @@ bool ImageLoader::initialize() {
         return false;
     }
 
-    imagePtr = datamanager()->writeChannel<lms::imaging::Image>(this, imageChannel);
+    imagePtr = datamanager()->writeChannel<lms::imaging::Image>(this, "IMAGE");
     return true;
 }
 
@@ -45,7 +39,7 @@ bool ImageLoader::deinitialize() {
 bool ImageLoader::cycle() {
     char name[50];
     std::snprintf(name, sizeof(name), filepattern.c_str(), imageCounter);
-    std::string fullPath = directory + "/" + name;
+    std::string fullPath = directory + "/" + name + "." + format;
 
     bool result = false;
 

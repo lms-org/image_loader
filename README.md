@@ -6,8 +6,10 @@ The LMS image loader module loads images from a directory and provides them via 
 - If PGM files are loaded they are provided as Format::GREY
 - If PPM files are loaded they are provided as Format::RGB
 
+## DataChannels
+- **IMAGE** - where to put the loaded image
+
 ## Config
-- **image_channel** - Loaded images will be written into the this data channel.
 - **directory** - Images will be loaded from this directory
 - **format** - image file format to load, either pgm or ppm
 - **filepattern** - used to create the file names, patterns can use every placeholder supported by printf

@@ -1,4 +1,3 @@
-image_channel = GREY_IMAGE
 directory = /tmp
 format = pgm
-filepattern = %04i.pgm
+filepattern = %04i
