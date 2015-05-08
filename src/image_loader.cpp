@@ -4,31 +4,10 @@
 
 bool ImageLoader::initialize() {
     config = getConfig();
+    imagePtr = datamanager()->writeChannel<lms::imaging::Image>(this, "IMAGE");
 
     directory = config->get<std::string>("directory");
-    format = config->get<std::string>("format");
-    filepattern = config->get<std::string>("filepattern");
-    imageCounter = 0;
-
-    if(directory.empty()) {
-        logger.error("init") << "directory is empty";
-        return false;
-    }
-
-    if(format.empty()) {
-        logger.error("init") << "format was not specified";
-        return false;
-    } else if(format != "pgm" && format != "ppm") {
-        logger.error("init") << "format must be either pgm or ppm";
-        return false;
-    }
-
-    if(filepattern.empty()) {
-        logger.error("init") << "filepattern was not specified";
-        return false;
-    }
-
-    imagePtr = datamanager()->writeChannel<lms::imaging::Image>(this, "IMAGE");
+    imageCounter = config->get<int>("minCounter");
     return true;
 }
 
@@ -37,25 +16,59 @@ bool ImageLoader::deinitialize() {
 }
 
 bool ImageLoader::cycle() {
-    char name[50];
-    std::snprintf(name, sizeof(name), filepattern.c_str(), imageCounter);
-    std::string fullPath = directory + "/" + name + "." + format;
+    std::string fullPath;
+    bool loadSingleFile = config->get<bool>("loadSingleFile");
+
+    if(! loadSingleFile) {
+        std::string filePattern = config->get<std::string>("filePattern");
+        std::string newDirectory = config->get<std::string>("directory");
+
+        if(newDirectory != directory) {
+            // reset imageCounter if directory changed
+            imageCounter = 0;
+            directory = newDirectory;
+        }
+
+        char name[50];
+        std::snprintf(name, sizeof(name), filePattern.c_str(), imageCounter);
+        fullPath = directory + "/" + name;
+    } else {
+        fullPath = config->get<std::string>("singleFile");
+    }
 
     bool result = false;
 
-    logger.time("read");
+    std::string format = config->get<std::string>("format");
     if(format == "pgm") {
         result = lms::imaging::readPGM(*imagePtr, fullPath);
     } else if(format == "ppm") {
         result = lms::imaging::readPPM(*imagePtr, fullPath);
+    } else {
+        logger.error("cycle") << "format is invalid, must be pgm or ppm";
+        return false;
     }
-    logger.timeEnd("read");
+
+    int maxCounter = config->get<int>("maxCounter");
 
     if(! result) {
         logger.warn("cycle") << "Could not read image";
-        imageCounter = 0;
+
+        if(! loadSingleFile) {
+            if(maxCounter == -1) {
+                // reset to minCounter if image could not be read
+                imageCounter = config->get<int>("minCounter");
+            } else {
+                imageCounter ++;
+            }
+        }
     } else {
-        imageCounter++;
+        if(! loadSingleFile) {
+            imageCounter++;
+        }
+    }
+
+    if(!loadSingleFile && maxCounter != -1 && imageCounter > maxCounter) {
+        imageCounter = config->get<int>("minCounter");
     }
 
     return true;

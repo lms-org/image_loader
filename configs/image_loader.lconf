@@ -1,3 +1,7 @@
 directory = /tmp
 format = pgm
-filepattern = %04i
+filepattern = %04i.pgm
+minCounter = 0
+maxCounter = -1
+loadSingleFile = false
+singleFile = /tmp/test.pgm

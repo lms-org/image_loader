@@ -4,6 +4,10 @@
 #include "lms/module.h"
 #include "lms/imaging/image.h"
 
+/**
+ * @brief The ImageLoader loads images from a folder or only a single file
+ * and provides them as an image in a datachannel.
+ */
 class ImageLoader : public lms::Module {
 public:
     bool initialize() override;
@@ -11,20 +15,9 @@ public:
     bool cycle() override;
 private:
     const lms::type::ModuleConfig *config;
-
     lms::imaging::Image *imagePtr;
 
     std::string directory;
-
-    // valid formats: pgm, ppm
-    std::string format;
-
-    /**
-     * @brief Format string that is used together with snprintf
-     * to produce the file names.
-     */
-    std::string filepattern;
-
     int imageCounter;
 };
 

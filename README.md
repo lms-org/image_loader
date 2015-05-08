@@ -12,7 +12,11 @@ The LMS image loader module loads images from a directory and provides them via 
 ## Config
 - **directory** - Images will be loaded from this directory
 - **format** - image file format to load, either pgm or ppm
-- **filepattern** - used to create the file names, patterns can use every placeholder supported by printf
+- **filePattern** - used to create the file names, patterns can use every placeholder supported by printf
+- **minCounter** - start counting the images from this number
+- **maxCounter** - end counting the images at this this number, set it to -1 if you want to load until an error during reading occurs
+- **loadSingleFile** - true/false, Set to true if just the file specified in _singleFile_ should be loaded
+- **singleFile** - full absolute path to a single image file that should be loaded
 
 ## Dependencies
 - [imaging](https://github.com/syxolk/imaging)
