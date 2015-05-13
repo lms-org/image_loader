@@ -19,6 +19,8 @@ private:
 
     std::string directory;
     int imageCounter;
+
+    bool manualNavigation;
 };
 
 #endif /* IMAGE_LOADER_H */

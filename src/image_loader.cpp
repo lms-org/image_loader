@@ -8,6 +8,7 @@ bool ImageLoader::initialize() {
 
     directory = config->get<std::string>("directory");
     imageCounter = config->get<int>("minCounter");
+    manualNavigation = false;
     return true;
 }
 
@@ -16,6 +17,15 @@ bool ImageLoader::deinitialize() {
 }
 
 bool ImageLoader::cycle() {
+    std::string commandNavigation = config
+            ->get<std::string>("commandNavigation", "image_loader");
+
+    for(const std::string &content : messaging()->receive(commandNavigation)) {
+        if(content == "manual") {
+            manualNavigation = ! manualNavigation;
+        }
+    }
+
     std::string fullPath;
     bool loadSingleFile = config->get<bool>("loadSingleFile");
 
@@ -48,18 +58,36 @@ bool ImageLoader::cycle() {
         return false;
     }
 
+    int minCounter = config->get<int>("minCounter");
     int maxCounter = config->get<int>("maxCounter");
 
-    if(! result) {
+    if(manualNavigation) {
+        for(const std::string &content :
+            messaging()->receive(commandNavigation)) {
+            if(content == "next") {
+                imageCounter ++;
+
+                if(maxCounter != -1 && imageCounter > maxCounter) {
+                    imageCounter = maxCounter;
+                }
+            } else if(content == "previous") {
+                imageCounter --;
+
+                if(imageCounter < minCounter) {
+                    imageCounter = minCounter;
+                }
+            }
+        }
+    } else if(! result) {
         if(loadSingleFile) {
             logger.warn("cycle") << "Could not read image";
         }else{
             if(maxCounter == -1) {
                 // reset to minCounter if image could not be read
-                if(config->get<int>("minCounter") == imageCounter){
+                if(minCounter == imageCounter){
                     logger.error("cycle") << "Could not read image";
                 }
-                imageCounter = config->get<int>("minCounter");
+                imageCounter = minCounter;
             } else {
                 imageCounter ++;
             }
