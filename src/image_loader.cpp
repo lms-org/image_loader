@@ -51,11 +51,14 @@ bool ImageLoader::cycle() {
     int maxCounter = config->get<int>("maxCounter");
 
     if(! result) {
-        logger.warn("cycle") << "Could not read image";
-
-        if(! loadSingleFile) {
+        if(loadSingleFile) {
+            logger.warn("cycle") << "Could not read image";
+        }else{
             if(maxCounter == -1) {
                 // reset to minCounter if image could not be read
+                if(config->get<int>("minCounter") == imageCounter){
+                    logger.error("cycle") << "Could not read image";
+                }
                 imageCounter = config->get<int>("minCounter");
             } else {
                 imageCounter ++;
