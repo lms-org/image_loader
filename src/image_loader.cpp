@@ -46,17 +46,7 @@ bool ImageLoader::cycle() {
         fullPath = config->get<std::string>("singleFile");
     }
 
-    bool result = false;
-
-    std::string format = config->get<std::string>("format");
-    if(format == "pgm") {
-        result = lms::imaging::readPGM(*imagePtr, fullPath);
-    } else if(format == "ppm") {
-        result = lms::imaging::readPPM(*imagePtr, fullPath);
-    } else {
-        logger.error("cycle") << "format is invalid, must be pgm or ppm";
-        return false;
-    }
+    bool result = lms::imaging::readPNM(*imagePtr, fullPath);
 
     int minCounter = config->get<int>("minCounter");
     int maxCounter = config->get<int>("maxCounter");
