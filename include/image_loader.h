@@ -3,6 +3,7 @@
 
 #include "lms/module.h"
 #include "lms/imaging/image.h"
+#include "lms/module_config.h"
 
 /**
  * @brief The ImageLoader loads images from a folder or only a single file
@@ -14,7 +15,7 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    const lms::type::ModuleConfig *config;
+    const lms::ModuleConfig *config;
     lms::imaging::Image *imagePtr;
 
     std::string directory;
