@@ -16,7 +16,7 @@ public:
     bool cycle() override;
 private:
     const lms::ModuleConfig *config;
-    lms::imaging::Image *imagePtr;
+    lms::WriteDataChannel<lms::imaging::Image> imagePtr;
 
     std::string directory;
     int imageCounter;
