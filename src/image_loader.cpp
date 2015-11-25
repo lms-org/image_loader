@@ -3,11 +3,10 @@
 #include "lms/imaging/pnm.h"
 
 bool ImageLoader::initialize() {
-    config = getConfig();
-    imagePtr = datamanager()->writeChannel<lms::imaging::Image>(this, "IMAGE");
+    imagePtr = writeChannel<lms::imaging::Image>("IMAGE");
 
-    directory = config->get<std::string>("directory");
-    imageCounter = config->get<int>("minCounter");
+    directory = config().get<std::string>("directory");
+    imageCounter = config().get<int>("minCounter");
     manualNavigation = false;
     return true;
 }
@@ -17,8 +16,8 @@ bool ImageLoader::deinitialize() {
 }
 
 bool ImageLoader::cycle() {
-    std::string commandNavigation = config
-            ->get<std::string>("commandNavigation", "image_loader");
+    std::string commandNavigation = config()
+            .get<std::string>("commandNavigation", "image_loader");
 
     for(const std::string &content : messaging()->receive(commandNavigation)) {
         if(content == "manual") {
@@ -27,11 +26,11 @@ bool ImageLoader::cycle() {
     }
 
     std::string fullPath;
-    bool loadSingleFile = config->get<bool>("loadSingleFile");
+    bool loadSingleFile = config().get<bool>("loadSingleFile");
 
     if(! loadSingleFile) {
-        std::string filePattern = config->get<std::string>("filePattern");
-        std::string newDirectory = config->get<std::string>("directory");
+        std::string filePattern = config().get<std::string>("filePattern");
+        std::string newDirectory = config().get<std::string>("directory");
 
         if(newDirectory != directory) {
             // reset imageCounter if directory changed
@@ -43,13 +42,13 @@ bool ImageLoader::cycle() {
         std::snprintf(name, sizeof(name), filePattern.c_str(), imageCounter);
         fullPath = directory + "/" + name;
     } else {
-        fullPath = config->get<std::string>("singleFile");
+        fullPath = config().get<std::string>("singleFile");
     }
 
     bool result = lms::imaging::readPNM(*imagePtr, fullPath);
 
-    int minCounter = config->get<int>("minCounter");
-    int maxCounter = config->get<int>("maxCounter");
+    int minCounter = config().get<int>("minCounter");
+    int maxCounter = config().get<int>("maxCounter");
 
     if(manualNavigation) {
         for(const std::string &content :
@@ -89,7 +88,7 @@ bool ImageLoader::cycle() {
     }
 
     if(!loadSingleFile && maxCounter != -1 && imageCounter > maxCounter) {
-        imageCounter = config->get<int>("minCounter");
+        imageCounter = config().get<int>("minCounter");
     }
 
     return true;

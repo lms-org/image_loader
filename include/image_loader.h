@@ -15,7 +15,6 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    const lms::ModuleConfig *config;
     lms::WriteDataChannel<lms::imaging::Image> imagePtr;
 
     std::string directory;
