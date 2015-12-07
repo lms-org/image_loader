@@ -69,12 +69,12 @@ bool ImageLoader::cycle() {
         }
     } else if(! result) {
         if(loadSingleFile) {
-            logger.warn("cycle") << "Could not read image";
+            logger.warn("cycle") << "Could not read single - image: "<<fullPath;
         }else{
             if(maxCounter == -1) {
                 // reset to minCounter if image could not be read
                 if(minCounter == imageCounter){
-                    logger.error("cycle") << "Could not read image";
+                    logger.info("cycle") << "Could not read image, start from beginning: "<<fullPath;
                 }
                 imageCounter = minCounter;
             } else {
