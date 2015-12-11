@@ -1,5 +1,4 @@
 #include "image_loader.h"
-#include "lms/datamanager.h"
 #include "lms/imaging/pnm.h"
 
 bool ImageLoader::initialize() {
