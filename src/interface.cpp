@@ -1,7 +1,3 @@
-#include <image_loader.h>
+#include "image_loader.h"
 
-extern "C" {
-void* getInstance () {
-    return new ImageLoader();
-}
-}
+LMS_MODULE_INTERFACE(ImageLoader)

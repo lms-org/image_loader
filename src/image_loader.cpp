@@ -4,8 +4,8 @@
 bool ImageLoader::initialize() {
     imagePtr = writeChannel<lms::imaging::Image>("IMAGE");
 
-    directory = config().get<std::string>("directory");
-    imageCounter = config().get<int>("minCounter");
+    directory = logDir("images");
+    imageCounter = config().get<int>("minCounter", 0);
     manualNavigation = false;
     return true;
 }
@@ -25,29 +25,22 @@ bool ImageLoader::cycle() {
     }
 
     std::string fullPath;
-    bool loadSingleFile = config().get<bool>("loadSingleFile");
+    bool loadSingleFile = config().get<bool>("loadSingleFile", false);
 
     if(! loadSingleFile) {
-        std::string filePattern = config().get<std::string>("filePattern");
-        std::string newDirectory = config().get<std::string>("directory");
-
-        if(newDirectory != directory) {
-            // reset imageCounter if directory changed
-            imageCounter = 0;
-            directory = newDirectory;
-        }
+        std::string filePattern = config().get<std::string>("filePattern", "%04i.pgm");
 
         char name[50];
         std::snprintf(name, sizeof(name), filePattern.c_str(), imageCounter);
-        fullPath = directory + "/" + name;
+        fullPath = directory + name;
     } else {
         fullPath = config().get<std::string>("singleFile");
     }
 
     bool result = lms::imaging::readPNM(*imagePtr, fullPath);
 
-    int minCounter = config().get<int>("minCounter");
-    int maxCounter = config().get<int>("maxCounter");
+    int minCounter = config().get<int>("minCounter", 0);
+    int maxCounter = config().get<int>("maxCounter", -1);
 
     if(manualNavigation) {
         for(const std::string &content :
@@ -87,7 +80,7 @@ bool ImageLoader::cycle() {
     }
 
     if(!loadSingleFile && maxCounter != -1 && imageCounter > maxCounter) {
-        imageCounter = config().get<int>("minCounter");
+        imageCounter = config().get<int>("minCounter", 0);
     }
 
     return true;
