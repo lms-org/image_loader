@@ -2,9 +2,14 @@
 #include "lms/imaging/pnm.h"
 
 bool ImageLoader::initialize() {
+    if(!isEnableLoad()) {
+        logger.error() << "Command line option --enable-load was not specified";
+        return false;
+    }
+
     imagePtr = writeChannel<lms::imaging::Image>("IMAGE");
 
-    directory = logDir("images");
+    directory = loadLogDir("images");
     imageCounter = config().get<int>("minCounter", 0);
     manualNavigation = false;
     return true;
