@@ -22,12 +22,13 @@ bool ImageLoader::deinitialize() {
 bool ImageLoader::cycle() {
     std::string commandNavigation = config()
             .get<std::string>("commandNavigation", "image_loader");
-
+    /*TODO
     for(const std::string &content : messaging()->receive(commandNavigation)) {
         if(content == "manual") {
             manualNavigation = ! manualNavigation;
         }
     }
+    */
 
     std::string fullPath;
     bool loadSingleFile = config().get<bool>("loadSingleFile", false);
@@ -46,7 +47,7 @@ bool ImageLoader::cycle() {
 
     int minCounter = config().get<int>("minCounter", 0);
     int maxCounter = config().get<int>("maxCounter", -1);
-
+    /*TODO
     if(manualNavigation) {
         for(const std::string &content :
             messaging()->receive(commandNavigation)) {
@@ -64,7 +65,7 @@ bool ImageLoader::cycle() {
                 }
             }
         }
-    } else if(! result) {
+    } else*/ if(! result) {
         if(loadSingleFile) {
             logger.warn("cycle") << "Could not read single - image: "<<fullPath;
         }else{
